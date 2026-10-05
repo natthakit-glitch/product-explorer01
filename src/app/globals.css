@@ -1,8 +1,21 @@
 @import "tailwindcss";
 
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  --background: #fafaf9;
+  --foreground: #1c1917;
+  --muted: #78716c;
+  --surface: #ffffff;
+  --surface-2: #f5f5f4;
+  --border: #e7e5e4;
+  --border-strong: #d6d3d1;
+  --primary: #0f766e;
+  --primary-hover: #0d9488;
+  --on-primary: #ffffff;
+  --danger: #dc2626;
+  --danger-soft: #fef2f2;
+  --danger-border: #fecaca;
+  --ring: rgb(13 148 136 / 0.35);
+  --shadow: 0 1px 2px rgb(28 25 23 / 0.06), 0 1px 3px rgb(28 25 23 / 0.04);
 }
 
 @theme inline {
@@ -14,13 +27,523 @@
 
 @media (prefers-color-scheme: dark) {
   :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
+    --background: #0c0a09;
+    --foreground: #f5f5f4;
+    --muted: #a8a29e;
+    --surface: #1c1917;
+    --surface-2: #292524;
+    --border: #292524;
+    --border-strong: #44403c;
+    --primary: #2dd4bf;
+    --primary-hover: #5eead4;
+    --on-primary: #042f2e;
+    --danger: #f87171;
+    --danger-soft: #3b1212;
+    --danger-border: #7f1d1d;
+    --ring: rgb(45 212 191 / 0.35);
+    --shadow: none;
   }
 }
 
 body {
   background: var(--background);
   color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  font-family: var(--font-geist-sans), "Noto Sans Thai", "Sarabun",
+    "Leelawadee UI", "Tahoma", system-ui, sans-serif;
+  line-height: 1.6;
+}
+
+/* =====================================================
+   โครงหน้า
+   หน้าแรก  : main > header + div (ProductExplorer)
+   หน้าแก้ไข : main > h1 + form
+   หน้าลบ   : main > h1 + p + div
+   ===================================================== */
+main {
+  width: min(100%, 68rem);
+  margin-inline: auto;
+  padding: 2rem 1rem 4rem;
+}
+
+h1 {
+  font-size: clamp(1.5rem, 4vw, 2rem);
+  font-weight: 700;
+  line-height: 1.25;
+  letter-spacing: -0.015em;
+}
+
+h1::before {
+  content: "";
+  display: inline-block;
+  width: 0.4rem;
+  height: 1.1em;
+  margin-right: 0.6rem;
+  vertical-align: -0.15em;
+  background: var(--primary);
+  border-radius: 9999px;
+}
+
+/* ---------- หน้าแรก: หัวเรื่อง + Login/Logout ---------- */
+main > header {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  margin-bottom: 1.5rem;
+}
+
+main > header h1 {
+  margin: 0;
+}
+
+header > div {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  font-size: 0.875rem;
+  color: var(--muted);
+}
+
+/* ProductExplorer: เรียงฟอร์ม/ตารางลงมา */
+main:has(> header) > div {
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+}
+
+/* =====================================================
+   ปุ่ม และลิงก์ที่หน้าตาเป็นปุ่ม
+   ===================================================== */
+button,
+td > a,
+main > form a,
+main:has(> p) > div > a {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  padding: 0.55rem 1.1rem;
+  font: inherit;
+  font-size: 0.875rem;
+  font-weight: 600;
+  line-height: 1.5;
+  text-decoration: none;
+  border: 1px solid transparent;
+  border-radius: 0.6rem;
+  cursor: pointer;
+  transition: background-color 0.15s, border-color 0.15s, color 0.15s,
+    transform 0.1s;
+}
+
+button:focus-visible,
+a:focus-visible {
+  outline: 2px solid var(--primary);
+  outline-offset: 2px;
+}
+
+/* ปุ่มหลัก: Login, ค้นหา, เพิ่มสินค้า, บันทึก */
+button {
+  background: var(--primary);
+  color: var(--on-primary);
+  box-shadow: var(--shadow);
+}
+
+button:hover:not(:disabled) {
+  background: var(--primary-hover);
+}
+
+button:active:not(:disabled) {
+  transform: translateY(1px);
+}
+
+button:disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+  box-shadow: none;
+}
+
+/* ปุ่มรอง: Logout, ยกเลิก, แก้ไข */
+header > div button,
+td > a,
+main > form a,
+main:has(> p) > div > a {
+  background: var(--surface);
+  color: var(--foreground);
+  border-color: var(--border-strong);
+  box-shadow: none;
+}
+
+header > div button:hover:not(:disabled),
+td > a:hover,
+main > form a:hover,
+main:has(> p) > div > a:hover {
+  background: var(--surface-2);
+}
+
+/* ปุ่มเล็ก: Logout และลิงก์ในตาราง */
+header > div button,
+td > a {
+  padding: 0.35rem 0.75rem;
+  font-size: 0.78rem;
+}
+
+/* =====================================================
+   ฟอร์ม
+   ===================================================== */
+label {
+  margin-bottom: 0.375rem;
+  font-size: 0.8125rem;
+  font-weight: 600;
+  color: var(--muted);
+}
+
+input,
+select {
+  width: 100%;
+  padding: 0.55rem 0.8rem;
+  background: var(--background);
+  color: inherit;
+  font: inherit;
+  font-size: 0.9rem;
+  border: 1px solid var(--border-strong);
+  border-radius: 0.6rem;
+  transition: border-color 0.15s, box-shadow 0.15s;
+}
+
+input::placeholder {
+  color: var(--muted);
+  opacity: 0.7;
+}
+
+select {
+  appearance: none;
+  padding-right: 2.25rem;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%2378716c' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 0.7rem center;
+  cursor: pointer;
+}
+
+input:focus,
+select:focus {
+  outline: none;
+  border-color: var(--primary);
+  box-shadow: 0 0 0 3px var(--ring);
+}
+
+/* ช่องที่ validate ไม่ผ่าน */
+input[aria-invalid="true"],
+select[aria-invalid="true"] {
+  border-color: var(--danger);
+}
+
+input[aria-invalid="true"]:focus,
+select[aria-invalid="true"]:focus {
+  box-shadow: 0 0 0 3px rgb(220 38 38 / 0.25);
+}
+
+/* ---------- การ์ดของฟอร์มบนหน้าแรก (ค้นหา, เพิ่มสินค้า) ---------- */
+main:has(> header) > div > form,
+main:has(> header) > div > section > form {
+  display: grid;
+  grid-template-columns: 1fr;
+  padding: 1.25rem;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 1rem;
+  box-shadow: var(--shadow);
+}
+
+/* ข้อความ error ใต้ช่อง: จองที่ไว้ ฟอร์มจะไม่กระตุก */
+main:has(> header) > div form span[role="alert"] {
+  display: block;
+  min-height: 1.4rem;
+  margin: 0.25rem 0 0.35rem;
+  font-size: 0.78rem;
+  color: var(--danger);
+}
+
+/* ช่องที่ไม่มีข้อความ error ตามหลัง เว้นระยะก่อนป้ายถัดไป */
+main:has(> header) > div form input:has(+ label),
+main:has(> header) > div form select:has(+ label) {
+  margin-bottom: 0.9rem;
+}
+
+main:has(> header) > div form > button {
+  margin-top: 0.5rem;
+}
+
+/* ข้อความ error จากการเพิ่มสินค้า (อยู่ใต้ฟอร์ม) */
+section:not([aria-live]) > p[role="alert"] {
+  margin-top: 0.6rem;
+  font-size: 0.85rem;
+  color: var(--danger);
+}
+
+/* ---------- จอกว้าง: จัดช่องเป็นคอลัมน์ ---------- */
+@media (min-width: 760px) {
+  main:has(> header) > div form > button {
+    margin-top: 0;
+  }
+
+  main:has(> header) > div form input:has(+ label),
+  main:has(> header) > div form select:has(+ label) {
+    margin-bottom: 0;
+  }
+
+  /* ฟอร์มค้นหา: คำค้น | จำนวน | เรียงตาม | ปุ่ม */
+  main:has(> header) > div > form:has(#q) {
+    grid-template-columns: 2fr 1fr 1fr auto;
+    column-gap: 1rem;
+  }
+
+  main:has(> header) > div > form label[for="q"]      { grid-area: 1 / 1; }
+  main:has(> header) > div > form #q                  { grid-area: 2 / 1; }
+  main:has(> header) > div > form label[for="limit"]  { grid-area: 1 / 2; }
+  main:has(> header) > div > form #limit              { grid-area: 2 / 2; }
+  main:has(> header) > div > form #limit-error        { grid-area: 3 / 2; }
+  main:has(> header) > div > form label[for="sortBy"] { grid-area: 1 / 3; }
+  main:has(> header) > div > form #sortBy             { grid-area: 2 / 3; }
+  main:has(> header) > div > form > button            { grid-area: 2 / 4; align-self: stretch; }
+
+  /* ฟอร์มเพิ่มสินค้า: ชื่อเต็มแถว | ราคา + คงเหลือ | หมวดหมู่เต็มแถว | ปุ่ม */
+  main:has(> header) > div > section > form {
+    grid-template-columns: 1fr 1fr;
+    column-gap: 1rem;
+  }
+
+  main:has(> header) > div > section > form label[for="title"]    { grid-area: 1 / 1 / 2 / 3; }
+  main:has(> header) > div > section > form #title                { grid-area: 2 / 1 / 3 / 3; }
+  main:has(> header) > div > section > form #title-error          { grid-area: 3 / 1 / 4 / 3; }
+
+  main:has(> header) > div > section > form label[for="price"]    { grid-area: 4 / 1; }
+  main:has(> header) > div > section > form #price                { grid-area: 5 / 1; }
+  main:has(> header) > div > section > form #price-error          { grid-area: 6 / 1; }
+
+  main:has(> header) > div > section > form label[for="stock"]    { grid-area: 4 / 2; }
+  main:has(> header) > div > section > form #stock                { grid-area: 5 / 2; }
+  main:has(> header) > div > section > form #stock-error          { grid-area: 6 / 2; }
+
+  main:has(> header) > div > section > form label[for="category"] { grid-area: 7 / 1 / 8 / 3; }
+  main:has(> header) > div > section > form #category             { grid-area: 8 / 1 / 9 / 3; }
+  main:has(> header) > div > section > form #category-error       { grid-area: 9 / 1 / 10 / 3; }
+
+  main:has(> header) > div > section > form > button              { grid-area: 10 / 2; justify-self: end; }
+}
+
+/* =====================================================
+   ตารางสินค้า (section ที่มี aria-live)
+   ===================================================== */
+section[aria-live] {
+  overflow-x: auto;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 1rem;
+  box-shadow: var(--shadow);
+}
+
+section[aria-live] > p {
+  padding: 2.5rem 1rem;
+  text-align: center;
+  font-size: 0.9rem;
+  color: var(--muted);
+}
+
+section[aria-live] > p[role="alert"] {
+  margin: 1.25rem;
+  padding: 0.85rem 1rem;
+  text-align: left;
+  color: var(--danger);
+  background: var(--danger-soft);
+  border: 1px solid var(--danger-border);
+  border-radius: 0.75rem;
+}
+
+table {
+  width: 100%;
+  min-width: 40rem;
+  border-collapse: collapse;
+  font-size: 0.9rem;
+}
+
+th {
+  padding: 0.75rem 1.25rem;
+  text-align: left;
+  font-size: 0.72rem;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--muted);
+  background: var(--surface-2);
+  border-bottom: 1px solid var(--border);
+}
+
+td {
+  padding: 0.75rem 1.25rem;
+  vertical-align: middle;
+  border-bottom: 1px solid var(--border);
+}
+
+tbody tr:last-child td {
+  border-bottom: 0;
+}
+
+tbody tr {
+  transition: background-color 0.12s;
+}
+
+tbody tr:hover {
+  background: var(--surface-2);
+}
+
+td img {
+  display: block;
+  width: 3.5rem;
+  height: 3.5rem;
+  object-fit: cover;
+  background: var(--surface-2);
+  border: 1px solid var(--border);
+  border-radius: 0.6rem;
+}
+
+/* คอลัมน์: 1 รูป | 2 ชื่อ | 3 ราคา | 4 คงเหลือ | 5 หมวดหมู่ | 6 จัดการ (เฉพาะตอนล็อกอิน) */
+td:nth-child(2) {
+  font-weight: 600;
+}
+
+th:nth-child(3),
+th:nth-child(4),
+td:nth-child(3),
+td:nth-child(4) {
+  text-align: right;
+  font-variant-numeric: tabular-nums;
+}
+
+td:nth-child(3) {
+  font-weight: 600;
+  color: var(--primary);
+}
+
+td:nth-child(5) {
+  color: var(--muted);
+  text-transform: capitalize;
+}
+
+th:nth-child(6),
+td:has(> a) {
+  text-align: right;
+  white-space: nowrap;
+}
+
+td > a + a {
+  margin-left: 0.4rem;
+}
+
+/* ลิงก์ "ลบ" */
+td > a:last-child {
+  color: var(--danger);
+  border-color: var(--danger-border);
+}
+
+td > a:last-child:hover {
+  background: var(--danger-soft);
+}
+
+/* =====================================================
+   หน้าแก้ไขสินค้า (main > h1 + form)
+   ===================================================== */
+main:has(> form) {
+  width: min(100%, 32rem);
+}
+
+main > h1 {
+  margin-bottom: 1.5rem;
+}
+
+main > form {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  padding: 1.25rem;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 1rem;
+  box-shadow: var(--shadow);
+}
+
+main > form > div {
+  display: flex;
+  flex-direction: column;
+  gap: 0.375rem;
+}
+
+main > form label {
+  margin-bottom: 0;
+}
+
+/* แถวปุ่ม: บันทึกชิดขวา ยกเลิกอยู่ซ้ายของบันทึก */
+main > form > div:last-child {
+  flex-direction: row-reverse;
+  justify-content: flex-start;
+  gap: 0.5rem;
+  padding-top: 0.5rem;
+}
+
+/* =====================================================
+   หน้ายืนยันการลบ (main > h1 + p + div)
+   ===================================================== */
+main:has(> p) {
+  width: min(calc(100% - 2rem), 32rem);
+  margin-block: 4rem;
+  padding: 2rem 1.5rem;
+  text-align: center;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 1rem;
+  box-shadow: var(--shadow);
+}
+
+main:has(> p) > h1 {
+  margin-bottom: 0;
+  font-size: 1.25rem;
+}
+
+main:has(> p) > h1::before {
+  content: "!";
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 3rem;
+  height: 3rem;
+  margin: 0 auto 1rem;
+  font-size: 1.25rem;
+  color: var(--danger);
+  background: var(--danger-soft);
+  border-radius: 9999px;
+}
+
+main > p {
+  margin: 0.5rem 0 0;
+  font-size: 0.9rem;
+  color: var(--muted);
+}
+
+main:has(> p) > div {
+  display: flex;
+  flex-direction: row-reverse;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  margin-top: 1.5rem;
+}
+
+/* ปุ่มยืนยันการลบ = สีแดง */
+main:has(> p) > div form button {
+  background: #dc2626;
+  color: #fff;
+}
+
+main:has(> p) > div form button:hover:not(:disabled) {
+  background: #b91c1c;
 }

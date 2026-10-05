@@ -1,7 +1,9 @@
+// หน้าแก้ไขสินค้า (/products/[id]/edit)
 import Link from "next/link";
 import { notFound, redirect } from "next/navigation";
 import { auth } from "@/auth";
-import { getProduct } from "@/lib/products";
+import { getProduct } from "@/lib/product-store";
+import { CATEGORIES } from "@/lib/products";
 import { updateProductAction } from "@/app/actions";
 
 type EditProductPageProps = {
@@ -11,22 +13,24 @@ type EditProductPageProps = {
 export default async function EditProductPage({
   params,
 }: EditProductPageProps) {
+  // ไม่ล็อกอินให้กลับหน้าแรก
   const session = await auth();
 
   if (!session?.user) {
     redirect("/");
   }
 
-  // Next 16: params เป็น Promise จึงต้อง await
+  // Next 16: params เป็น Promise ต้อง await
   const { id } = await params;
 
-  const product = getProduct(id);
+  // id ใน URL เป็นข้อความ แต่ id ของสินค้าเป็นตัวเลข จึงแปลงด้วย Number
+  const product = await getProduct(Number(id));
 
   if (!product) {
     notFound();
   }
 
-  // ผูก product.id เป็น argument ตัวแรกไว้ล่วงหน้า
+  // ผูก id เป็น argument ตัวแรกของ action ไว้ก่อน ฟอร์มจะส่งมาแค่ formData
   const updateAction = updateProductAction.bind(null, product.id);
 
   return (
@@ -35,11 +39,11 @@ export default async function EditProductPage({
 
       <form action={updateAction}>
         <div>
-          <label htmlFor="name">ชื่อสินค้า</label>
+          <label htmlFor="title">ชื่อสินค้า</label>
           <input
-            id="name"
-            name="name"
-            defaultValue={product.name}
+            id="title"
+            name="title"
+            defaultValue={product.title}
             required
           />
         </div>
@@ -58,13 +62,32 @@ export default async function EditProductPage({
         </div>
 
         <div>
-          <label htmlFor="description">รายละเอียด</label>
-          <textarea
-            id="description"
-            name="description"
-            defaultValue={product.description}
+          <label htmlFor="stock">จำนวนคงเหลือ</label>
+          <input
+            id="stock"
+            name="stock"
+            type="number"
+            min="0"
+            step="1"
+            defaultValue={product.stock}
             required
           />
+        </div>
+
+        <div>
+          <label htmlFor="category">หมวดหมู่</label>
+          <select
+            id="category"
+            name="category"
+            defaultValue={product.category}
+            required
+          >
+            {CATEGORIES.map((name) => (
+              <option key={name} value={name}>
+                {name}
+              </option>
+            ))}
+          </select>
         </div>
 
         <div>
@@ -75,4 +98,3 @@ export default async function EditProductPage({
     </main>
   );
 }
-

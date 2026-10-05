@@ -1,37 +1,37 @@
-import Link from "next/link"; 
-import { auth } from "@/auth"; 
-import { getProducts } from "@/lib/products"; 
-import { AuthButtons } from "@/app/components/auth-buttons"; 
- 
-export default async function HomePage() { 
-  const session = await auth(); 
-  const products = getProducts(); 
-  // เติม: ฟังก์ชันที่แปลงค่าเป็น true หรือ false 
-  const isLoggedIn = !!session?.user; 
- 
-  return ( 
-    <main> 
-      <header> 
-        <h1>สินค้า</h1> 
-        <AuthButtons isLoggedIn={isLoggedIn} userName={session?.user?.name} /> 
-      </header> 
- 
-      <div> 
-        {products.map((product) => ( 
-          <article key={product.id} data-testid="product"> 
-            <h2>{product.name}</h2> 
-            <p>{product.description}</p> 
-            <p>฿{product.price.toLocaleString("th-TH")}</p> 
-            {isLoggedIn && ( 
-              <div> 
-                <Link href={`/products/${product.id}/edit`}>แก้ไข</Link> 
-                <Link href={`/products/${product.id}/delete`}>ลบ</Link> 
-              </div> 
-            )} 
-          </article> 
-        ))} 
-        {products.length === 0 && <p>ไม่มีสินค้า</p>} 
-      </div> 
-    </main> 
-  ); 
-} 
+// หน้าแรก: โหลดสินค้าจาก server แล้วส่งให้ ProductExplorer (client)
+import { auth } from "@/auth";
+import { searchProducts } from "@/lib/product-store";
+import { defaultQuery } from "@/lib/products";
+import type { ProductList } from "@/lib/products";
+import { AuthButtons } from "@/app/components/auth-buttons";
+import ProductExplorer from "@/app/components/ProductExplorer";
+export default async function HomePage() {
+  const session = await auth();
+  const isLoggedIn = !!session?.user;
+
+  // โหลดรายการเริ่มต้น ถ้าไม่สำเร็จให้ส่งข้อความ error ไปแสดง
+  let initialList: ProductList | null = null;
+  let initialError = "";
+
+  try {
+    initialList = await searchProducts(defaultQuery);
+  } catch (error) {
+    initialError =
+      error instanceof Error ? error.message : "เรียกข้อมูลไม่สำเร็จ";
+  }
+
+  return (
+    <main>
+      <header>
+        <h1>สินค้า</h1>
+        <AuthButtons isLoggedIn={isLoggedIn} userName={session?.user?.name} />
+      </header>
+
+      <ProductExplorer
+        initialList={initialList}
+        initialError={initialError}
+        isLoggedIn={isLoggedIn}
+      />
+    </main>
+  );
+}
